@@ -1,0 +1,114 @@
+# ==========================================================================
+# 视觉检测 Agent · 任务配置（钢材表面缺陷检测示例）
+#
+#   cd D:/Fey/Desktop/code/yolov8-se-ema-cbam/vision_agent
+#   python -m vision_agent plan --task config/task.example.yaml
+#   python -m vision_agent run  --task config/task.example.yaml
+#
+# 所有相对路径都相对本文件所在目录解析。
+# ==========================================================================
+
+task:
+  name: steel-defect-detection
+  dataset_type: 钢材表面缺陷检测
+  dataset_name: NEU-DET
+  dataset_keywords:
+    - steel surface defect detection dataset
+    - NEU-DET steel surface defect database
+    - surface defect detection benchmark
+  classes:
+    - crazing
+    - inclusion
+    - patches
+    - pitted_surface
+    - rolled-in-scale
+    - scratches
+  description: NEU-DET 钢材表面缺陷数据集上的 YOLOv8 注意力模块消融研究
+
+model:
+  # 基线（会作为消融矩阵里的「基线」组）
+  base: yolov8n
+  pretrained: yolov8n.pt
+  # 本地 ultralytics 仓库里已有的自定义结构，直接复用
+  variants:
+    - yolov8-se
+    - yolov8-ema
+    - yolov8-cbam
+  # 组合变体：Agent 会自动生成对应 YAML（SE+EMA+CBAM 三合一）
+  auto_variants:
+    - se+ema+cbam
+  # auto | local | github
+  source: auto
+  # 在 backbone 的前 N 个 C2f 之后插入注意力模块
+  insert_after_c2f: 3
+
+data:
+  # local | url | huggingface | kaggle
+  source: local
+  local_dir: ../../ultralytics-main/datasets/NEU-DET
+  annotation_format: auto      # auto | voc_xml | coco_json | yolo_txt
+  split:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  seed: 0
+  copy_mode: link              # link | copy | symlink
+
+train:
+  epochs: 300
+  batch: 16
+  imgsz: 640
+  device: "0"
+  workers: 8
+  patience: 50
+  optimizer: auto
+  lr0: 0.01
+  seed: 0
+  auto_train: true
+  # 留空 = 用 base + variants + auto_variants 组装消融矩阵
+  ablations: []
+
+llm:
+  # auto | anthropic | chat-completions | none
+  # auto 会依次尝试: task.yaml -> 环境变量 -> ~/.minimax/config.yaml
+  provider: auto
+  base_url: ""
+  api_key: ""
+  api_key_env: VISION_AGENT_LLM_API_KEY
+  model: ""
+  temperature: 0.3
+  max_tokens: 4096
+  fallback: template            # template | strict
+
+search:
+  enabled: true
+  max_results: 8
+  timeout: 30
+  offline: false
+  sources:
+    - huggingface
+    - zenodo
+    - arxiv
+    - semanticscholar
+    - github
+
+app:
+  host: 127.0.0.1
+  port: 8000
+  conf: 0.25
+  iou: 0.45
+  title: 钢材表面缺陷检测系统
+  camera_default: 0
+  max_upload_mb: 20
+
+report:
+  title: 钢材表面缺陷检测 —— 基于注意力模块改进的 YOLOv8 目标检测系统
+  author: ""
+  background: ""
+  output: reports/project_report.md
+
+# Agent 工作目录：所有产物都写在这里（与 vision_agent/ 同级，互不污染）
+workspace: ../../workspace/steel-defect
+
+# 本地 ultralytics 仓库根目录（含 SE/EMA/CBAM 自定义模块的那个）
+project_root: ../../ultralytics-main

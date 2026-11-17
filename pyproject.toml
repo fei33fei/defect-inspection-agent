@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vision-agent"
+version = "0.1.0"
+description = "视觉检测 Agent：面向工业表面缺陷检测的自动化实验流水线"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pyyaml>=6.0",
+    "requests>=2.28",
+]
+
+[project.optional-dependencies]
+app = ["flask>=2.2", "opencv-python>=4.8"]
+llm = ["openai>=1.0"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+vision-agent = "vision_agent.cli:main"
+
+[tool.setuptools]
+packages = ["vision_agent", "vision_agent.search", "vision_agent.stages"]
+
+[tool.setuptools.package-data]
+vision_agent = ["*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

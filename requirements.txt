@@ -1,0 +1,22 @@
+# Agent 本体依赖（轻量，装这两个就能跑 plan/run 的非训练部分）
+pyyaml>=6.0
+requests>=2.28
+
+# 可视化系统依赖（scripts/app_*.py 需要）
+# flask>=3.0
+# opencv-python>=4.8
+
+# 可选：让 LLM 走 OpenAI 兼容接口（也可直接用 ~/.minimax/config.yaml，无需安装）
+# openai>=1.0
+
+# 可选：HuggingFace 数据集一键下载（不走 API 也能用）
+# huggingface_hub>=0.23
+
+# ---------------------------------------------------------------------------
+# 训练环境不在这里装 —— Agent 会自动挑选装了 torch 的解释器。
+# 需要时用：
+#   conda create -n vision-agent python=3.10 -y
+#   conda activate vision-agent
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#   pip install ultralytics opencv-python flask
+# ---------------------------------------------------------------------------

@@ -1,0 +1,73 @@
+# 冒烟测试配置：真实数据 + 真实训练，但只跑 2 个 epoch、只跑基线。
+# 用来验证 S5(训练) -> S6(可视化) -> S7(推理) -> S8(文档) 全链路是否通。
+#
+#   python -m vision_agent run --task tests/fixtures/task.smoke.yaml
+
+task:
+  name: steel-defect-smoke
+  dataset_type: 钢材表面缺陷检测
+  dataset_name: NEU-DET
+  dataset_keywords:
+    - steel surface defect detection dataset
+  classes:
+    - crazing
+    - inclusion
+    - patches
+    - pitted_surface
+    - rolled-in-scale
+    - scratches
+
+model:
+  base: yolov8n
+  pretrained: yolov8n.pt
+  variants: []
+  auto_variants: []
+  insert_after_c2f: 3
+
+data:
+  source: local
+  local_dir: ../../../ultralytics-main/datasets/NEU-DET
+  annotation_format: auto
+  split:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  seed: 0
+  copy_mode: link
+
+train:
+  epochs: 2
+  batch: 8
+  imgsz: 320
+  device: "0"
+  workers: 4
+  patience: 50
+  optimizer: auto
+  lr0: 0.01
+  seed: 0
+  auto_train: true
+  ablations: [baseline]
+
+llm:
+  provider: none
+  fallback: template
+
+search:
+  enabled: false
+  offline: true
+
+app:
+  host: 127.0.0.1
+  port: 8123
+  conf: 0.25
+  iou: 0.45
+  title: 冒烟测试检测系统
+  camera_default: 0
+
+report:
+  title: 冒烟测试报告
+  author: ""
+  background: ""
+
+workspace: ../../../workspace/smoke
+project_root: ../../../ultralytics-main
