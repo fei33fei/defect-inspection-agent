@@ -21,6 +21,33 @@ vision_agent/
 
 ---
 
+## 桌面版（Windows 便携版）
+
+不想配 Python 环境？下载即用：
+
+| 版本 | 下载 | 说明 |
+| --- | --- | --- |
+| v0.1.0 便携版 | [DefectInspector-0.1.0-portable.exe](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-portable.exe) | 单文件，双击即用 |
+| v0.1.0 压缩包 | [DefectInspector-0.1.0-win-x64.zip](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-win-x64.zip) | 解压后直接跑 `DefectInspector.exe`，**启动快** |
+
+> 两种形态内容完全一样。便携版首启要自己解压内置运行时（约 1 GB、13000+ 个文件，
+> 期间会显示进度画面，几分钟后自动打开主界面）；压缩包只需解压一次，之后每次启动都是秒开。
+
+桌面版不是「单独的可视化网页」，而是**整个 Agent 的流水线控制台**：
+
+- **任务配置** —— 一份 `task.yaml` 直接在界面里改，保存即生效
+- **九阶段流水线** —— S0–S8 卡片式展示，可以只跑某一步，也能一键跑完整条链
+- **实时日志** —— 训练 / 推理日志逐行回显，不用另外开终端
+- **产物与报告** —— 数据切分、权重、推理样本、Markdown 报告，界面里直接看
+- **可视化系统** —— 上传检测 + 摄像头实时检测，内嵌在同一个窗口
+
+便携版自带 CPU 版推理运行时，**机器上没有 Python 也能跑**；
+若本机装有 CUDA 版 PyTorch，训练阶段会自动改用它（走 GPU）。
+
+桌面版与命令行版跑的是**同一份 `vision_agent` 代码**，不是两套实现。
+
+---
+
 ## 快速开始
 
 ```bash
@@ -295,7 +322,8 @@ A：`s1` 的数据集检索依赖外网，站点不可达时会退化为「只�
 - 可视化系统的上传图片只落在你自己机器的 `app/uploads/` 与 `app/outputs/` 目录；
 - `s1` 的检索会访问 HuggingFace / Zenodo / arXiv / Semantic Scholar / Crossref / OpenAlex / GitHub 这些公开站点，**只发查询关键词，不发你的图片或数据**；
 - 配置大模型后，`s1` 与 `s8` 会把调研文本与文档草稿发给你指定的模型端点——这是你自己配的，凭据来自 `task.yaml`、环境变量或 `~/.minimax/config.yaml`；
-- 摄像头画面只在本地处理，不外发。
+- 摄像头画面只在本地处理，不外发；
+- 桌面版的任务配置与全部产物都在 `%APPDATA%\DefectInspector\workspaces\<任务名>\` 下，不写安装目录，也不上传任何服务器。
 
 ---
 
