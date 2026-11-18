@@ -25,13 +25,15 @@ vision_agent/
 
 不想配 Python 环境？下载即用：
 
-| 版本 | 下载 | 说明 |
+| 形态 | 下载 | 说明 |
 | --- | --- | --- |
-| v0.1.0 便携版 | [DefectInspector-0.1.0-portable.exe](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-portable.exe) | 单文件，双击即用 |
-| v0.1.0 压缩包 | [DefectInspector-0.1.0-win-x64.zip](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-win-x64.zip) | 解压后直接跑 `DefectInspector.exe`，**启动快** |
+| **安装包（推荐）** | [DefectInspector-0.1.0-setup.exe](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-setup.exe) | 装一次（自带进度条），之后每次启动都是秒开 |
+| 压缩包 | [DefectInspector-0.1.0-win-x64.zip](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-win-x64.zip) | 解压后直接跑 `DefectInspector.exe`，免安装 |
+| 单文件便携版 | [DefectInspector-0.1.0-portable.exe](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/DefectInspector-0.1.0-portable.exe) | 单个文件，无需解压；但**每次启动都会重新解压内置运行时**（约 1 GB，有进度画面），只适合临时用一次 |
 
-> 两种形态内容完全一样。便携版首启要自己解压内置运行时（约 1 GB、13000+ 个文件，
-> 期间会显示进度画面，几分钟后自动打开主界面）；压缩包只需解压一次，之后每次启动都是秒开。
+> 三种形态内容完全一样。内置的推理运行时约 630 MB（13000+ 个文件），
+> 所以「装一次」和「解压一次」比「每次启动都解压」实用得多。
+> 下载后可核对 `.sha256` 校验文件。
 
 桌面版不是「单独的可视化网页」，而是**整个 Agent 的流水线控制台**：
 
