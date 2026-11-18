@@ -1,7 +1,6 @@
 # ==========================================================================
 # 视觉检测 Agent · 任务配置（钢材表面缺陷检测示例）
 #
-#   cd D:/Fey/Desktop/code/yolov8-se-ema-cbam/vision_agent
 #   python -m vision_agent plan --task config/task.example.yaml
 #   python -m vision_agent run  --task config/task.example.yaml
 #

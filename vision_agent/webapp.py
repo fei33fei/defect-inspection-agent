@@ -47,6 +47,10 @@ def _ensure_agent_on_path() -> None:
     本文件会被复制成独立脚本（工作区 scripts/app_xxx.py）运行，
     那时包本身不在 sys.path 上，import vision_agent.attention 会失败。
     这里向上回溯几级找到含 vision_agent/ 的目录并补进路径。
+
+    另外两种情况也一并处理：
+    - ``VA_AGENT_DIR`` 环境变量显式指定（生成脚本时会写进去）；
+    - 桌面版运行时布局：``agent/`` 与 ``server/`` 平级，向上回溯找不到。
     """
     import sys
 
@@ -58,14 +62,45 @@ def _ensure_agent_on_path() -> None:
         pass
 
     here = Path(__file__).resolve().parent
+
+    def _add(candidate: Path) -> bool:
+        if (candidate / "vision_agent" / "attention.py").exists():
+            if str(candidate) not in sys.path:
+                sys.path.insert(0, str(candidate))
+            return True
+        return False
+
+    env_dir = os.environ.get("VA_AGENT_DIR", "").strip()
+    if env_dir and _add(Path(env_dir)):
+        return
+
+    for candidate in (here.parent / "agent", here.parent):
+        if _add(candidate):
+            return
+
     for parent in here.parents:
-        if (parent / "vision_agent" / "attention.py").exists():
-            if str(parent) not in sys.path:
-                sys.path.insert(0, str(parent))
+        if _add(parent):
             return
         # 只回溯有限层数，避免在巨大的目录树里空转
         if len(str(parent)) < len(str(here)) - 200:
             return
+
+
+# ---------------------------------------------------------------------------
+# 注意力模块补丁
+# ---------------------------------------------------------------------------
+# 必须在加载 SE/EMA/CBAM 权重**之前**装好：ultralytics 反序列化 .pt 时
+# 会按类名回查 ultralytics.nn.modules.conv，补丁晚一步就会报
+# "Can't get attribute 'SEBlock'"。
+_ensure_agent_on_path()
+try:
+    from vision_agent.attention import install as _install_attention
+
+    _install_attention()
+except Exception as _exc:  # noqa: BLE001 - 补丁失败不阻断启动，/health 会显示原因
+    _ATTENTION_PATCH_ERROR = str(_exc)
+else:
+    _ATTENTION_PATCH_ERROR = ""
 
 
 # ---------------------------------------------------------------------------
@@ -87,17 +122,10 @@ def load_model(model_path: str):
     except ImportError as exc:
         return None, f"未安装 ultralytics: {exc}"
     try:
-        # SE/EMA/CBAM 权重需要官方 ultralytics 认识这些模块，先装补丁
-        _ensure_agent_on_path()
-        from vision_agent.attention import install as _install_attention
-
-        _install_attention()
-    except Exception:  # noqa: BLE001 - 补丁失败时让 YOLO 自己去报错
-        pass
-    try:
         model = YOLO(str(path))
     except Exception as exc:  # noqa: BLE001
-        return None, f"模型加载失败: {exc}"
+        hint = f"（注意力补丁未生效: {_ATTENTION_PATCH_ERROR}）" if _ATTENTION_PATCH_ERROR else ""
+        return None, f"模型加载失败: {exc}{hint}"
     _model_cache["model"] = model
     return model, ""
 

@@ -246,6 +246,9 @@ def _run_training(
                     errors="replace",
                     bufsize=1,
                     cwd=str(ctx.cfg.project_root if ctx.cfg.project_root.exists() else Path.cwd()),
+                    # 子进程默认用系统 ANSI 编码输出，路径里有中文时会乱码；
+                    # 显式指定 UTF-8 才能对上这里的 utf-8 解码。
+                    env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1"},
                 )
                 assert proc.stdout is not None
                 for line in proc.stdout:

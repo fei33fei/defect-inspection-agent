@@ -748,6 +748,12 @@ def generate_app_script(
         "    p = _Path(value)\n"
         "    return str(p if p.is_absolute() else (_BASE / p).resolve())\n"
         "\n"
+        # Agent 包所在目录（vision_agent/ 的上一级）。生成的脚本要 import
+        # vision_agent.attention 才能装上 SE/EMA/CBAM 补丁；工作区跟仓库不在
+        # 同一棵目录树下时，光靠向上回溯找不到，所以把路径写进脚本。
+        # 这是「用户机器上」的位置，不是构建机的路径；路径失效时会自动回退到
+        # 向上回溯 / VA_AGENT_DIR 环境变量。
+        f"_os.environ.setdefault('VA_AGENT_DIR', r'{Path(__file__).resolve().parent.parent}')\n"
         f"_os.environ.setdefault('VA_MODEL', _abs(r'{_rel_to_script(model_path, out_path)}'))\n"
         f"_os.environ.setdefault('VA_CONF', '{conf}')\n"
         f"_os.environ.setdefault('VA_IOU', '{iou}')\n"
