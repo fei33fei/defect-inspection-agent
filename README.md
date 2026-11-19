@@ -33,7 +33,15 @@ vision_agent/
 
 > 三种形态内容完全一样。内置的推理运行时约 630 MB（13000+ 个文件），
 > 所以「装一次」和「解压一次」比「每次启动都解压」实用得多。
-> 下载后可核对 `.sha256` 校验文件。
+
+**校验下载完整性**：每个下载文件都有同名 `.sha256`，
+另有一份汇总的 [`SHA256SUMS.txt`](https://github.com/fei33fei/defect-inspection-agent/releases/download/desktop-v0.1.0/SHA256SUMS.txt)（含三个文件）：
+
+```powershell
+# 校验单个文件
+Get-FileHash .\DefectInspector-0.1.0-setup.exe -Algorithm SHA256
+# 与同目录 .sha256 里的值逐字符比对
+```
 
 桌面版不是「单独的可视化网页」，而是**整个 Agent 的流水线控制台**：
 
